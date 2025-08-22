@@ -39,8 +39,6 @@ function mostrarResultados(resultados) {
           <button onclick="verDetalle('${item["CUE"]}')">Ver</button>
           <button onclick="exportarPDF('${item["CUE"]}')">Exportar PDF</button>
         </td>
-        <td>
-          <button onclick="alert('Matrícula generada para: ${item["ESTABLECIMIENTO"]}')">Generar Matrícula</button>
       </tr>
     `;
   });
