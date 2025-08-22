@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Matrículas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <span class="logo-text">SAN LUIS<br><span class="provincia">La Provincia</span></span>
+        </div>
+    </header>
+    <main class="main-content">
+        <h1>GENERADOR DE MATRÍCULAS</h1>
+        <div class="buscador">
+            <input type="text" id="searchInput" placeholder="Buscar establecimiento...">
+        </div>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Nombre del Establecimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <!-- jsPDF para generación de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Tu script principal -->
+    <script src="script.js"></script>
+</body>
+</html>
