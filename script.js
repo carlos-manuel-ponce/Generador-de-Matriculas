@@ -98,15 +98,56 @@ function search() {
 
 // Exportar PDF con todos los datos
 function exportarPDF(est) {
-    let nombreCompleto = `${est.DENOMINACION} Nº ${est.NUMERO} \"${est.ESTABLECIMIENTO}\"`;
-    let docContent = `${nombreCompleto}\n`;
-    docContent += `Fecha: 22/08/2025\n`;
-    docContent += `NIVEL: ${est.NIVEL}\nESTRUCTURA: ${est.ESTRUCTURA_CURRICULAR}\nAÑO/GRADO: ${est["GRADO/AÑO"]}\nTURNO: ${est.TURNO}\nSECCION: ${est.SECCION}\nMATRICULA: ${est.MATRICULA}`;
-    const blob = new Blob([docContent], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = `${est.ESTABLECIMIENTO || 'establecimiento'}.pdf`;
-    link.click();
+    // Consulta solo los datos de la escuela seleccionada
+    const { data, error } = await supabase
+        .from('matriculas')
+        .select('*')
+        .eq('CUE', est.CUE);
+    if (error || !data || data.length === 0) {
+        alert('No hay datos para esta escuela');
+        return;
+    }
+    // Agrupar por NIVEL y ESTRUCTURA CURRICULAR
+    const agrupado = {};
+    data.forEach(row => {
+        const nivel = row["NIVEL"];
+        const estructura = row["ESTRUCTURA CURRICULAR"];
+        if (!agrupado[nivel]) agrupado[nivel] = {};
+        if (!agrupado[nivel][estructura]) agrupado[nivel][estructura] = [];
+        agrupado[nivel][estructura].push(row);
+    });
+    let encabezado = data[0];
+    // Generar PDF con jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 20;
+    doc.setFontSize(14);
+    let nombreCompleto = `${encabezado["DENOMINACION"]} Nº ${encabezado["NUMERO"]} "${encabezado["ESTABLECIMIENTO"]}"`;
+    doc.text(nombreCompleto, 20, y);
+    y += 10;
+    doc.setFontSize(10);
+    doc.text('Fecha: 22/08/2025', 20, y);
+    y += 10;
+    for (const nivel in agrupado) {
+        doc.setFontSize(12);
+        doc.text('NIVEL: ' + nivel, 20, y);
+        y += 6;
+        for (const estructura in agrupado[nivel]) {
+            doc.setFontSize(10);
+            doc.text('Estructura: ' + estructura, 20, y);
+            y += 6;
+            doc.text('AÑO/GRADO   TURNO   SECCION   MATRÍCULA', 20, y);
+            y += 6;
+            agrupado[nivel][estructura].forEach(row => {
+                const fila = `${row["GRADO/AÑO"]}   ${row["TURNO"]}   ${row["SECCION"]}   ${row["MATRICULA"]}`;
+                doc.text(fila, 20, y);
+                y += 6;
+            });
+            y += 4;
+        }
+        y += 4;
+    }
+    doc.save('MATRICULA_' + encabezado["ESTABLECIMIENTO"] + '.pdf');
 }
 
 
